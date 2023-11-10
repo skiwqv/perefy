@@ -2,4 +2,10 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 
-createApp(App).use(router).mount('#app')
+import Unicon from 'vue-unicons'
+import { uniHome, uniMusic, uniFolderHeart, uniSetting } from 'vue-unicons/dist/icons'
+
+Unicon.add([uniHome, uniMusic, uniFolderHeart, uniSetting])
+
+
+createApp(App).use(router).use(Unicon).mount('#app')
