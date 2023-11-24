@@ -10,8 +10,10 @@ import sidebarNavVue from "./components/links/sidebar-nav.vue";
 </script>
 
 <style>
+
 body {
   background-color: #301B3F;
+  font-family: 'Quicksand';
 }
 
 </style>

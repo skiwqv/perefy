@@ -2,6 +2,8 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 
+import "./assets/css/style.css"
+
 import Unicon from 'vue-unicons'
 import { uniHome, uniMusic, uniFolderHeart, uniSetting } from 'vue-unicons/dist/icons'
 
