@@ -2,27 +2,23 @@
 <template>
   <div class="song_wrapper">
     <div class="audio-container">
-      <audio controls :src="playSong">
-      </audio>
-      <p class="song-title">{{songTitle}}</p>
+      <audio controls :src="playSong"></audio>
+      <p class="song-title">{{ songTitle }}</p>
     </div>
-    <div class="song_container">
-      <input
-        v-model="songSearchName"
-        placeholder="Search"
-        class="song_search"
-        type="text"
-      />
+    <div @scroll="handleScroll" ref="scrollContainer" class="song_container">
+      <input v-model="songSearchName" placeholder="Search" class="song_search" type="text" />
       <div v-for="song in filteredItems" :key="song">
         <div class="song" @click="selectSong(song)">{{ song.name }}</div>
       </div>
+      <p v-if="reachedEnd" class="list_end">that's all available songs</p>
     </div>
+    <p class="loading" v-if="isLoading">loading...</p>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed} from "vue";
-const axios = require("axios");
+import { ref, onMounted, computed } from "vue";
+import axios from "axios";
 
 const options = {
   method: "GET",
@@ -32,18 +28,31 @@ const options = {
 const musicName = ref({});
 const songMap = ref({});
 const songId = ref();
-let songTitle = ref('')
-
+let songTitle = ref("");
 const songData = ref({});
 let playSong = ref();
-let songSearchName = ref('');
+let songSearchName = ref("");
 let filteredSongs = ref([]);
+let isLoading = ref(false);
+let scrollContainer = ref(null);
+const pageNumber = ref(1);
+const pageSize = 100;
+const reachedEnd = ref(false);
+let loadedItems = ref([]);
 
 const filteredItems = computed(() => {
-  return filteredSongs.value.filter((item) =>
+  return loadedItems.value.filter((item) =>
     item.name.toLowerCase().includes(songSearchName.value.toLowerCase())
   );
 });
+
+function handleScroll() {
+  const container = scrollContainer.value;
+  const bottomOffset = container.scrollHeight - container.clientHeight;
+  if (bottomOffset <= container.scrollTop) {
+    loadMore();
+  }
+}
 
 async function fetchMusic() {
   const response = await axios.request(options);
@@ -52,23 +61,36 @@ async function fetchMusic() {
 
   musicName.value.forEach((item) => {
     filteredSongs.value.push({
-      name:item.name,
-      id:item.id
+      name: item.name,
+      id: item.id,
     });
   });
-
+  loadMore();
+}
+function loadMore() {
+  isLoading.value = false;
+  const startIndex = (pageNumber.value - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const nextItems = filteredSongs.value.slice(startIndex, endIndex);
+  if (nextItems.length > 0) {
+    loadedItems.value = [...loadedItems.value, ...nextItems];
+    pageNumber.value++;
+  } else {
+    reachedEnd.value = true;
+  }
 }
 
 function selectSong(song) {
   songData.value = song;
   songId.value = songData.value.id;
-  songTitle.value = song.name
+  songTitle.value = song.name;
   const alligator = songMap.value;
   playSong.value = alligator[songId.value];
 }
 
 onMounted(() => {
   fetchMusic();
+  loadedItems.value = filteredSongs.value.slice(0, pageSize);
 });
 </script>
 
@@ -76,11 +98,15 @@ onMounted(() => {
 .song_wrapper {
   margin-top: 60px;
 }
+
 .song_container {
-  max-height: 650px;
+  max-height: 525px;
+  height: 100%;
   overflow: auto;
   position: relative;
+  overflow-x: hidden;
 }
+
 .song_search {
   position: fixed;
   left: 120px;
@@ -93,11 +119,13 @@ onMounted(() => {
   color: white;
   border: none;
 }
+
 .song_search::placeholder {
   color: rgba(255, 255, 255, 0.25);
   font-weight: 600;
   font-size: 14px;
 }
+
 .song {
   border-radius: 15px;
   background: rgba(51, 55, 59, 0.37);
@@ -117,47 +145,62 @@ onMounted(() => {
   flex-shrink: 0;
   transition: all 0.3s;
 }
+
 .song:hover {
   background: rgba(84, 91, 97, 0.37);
 }
+
 .player {
   position: fixed;
   bottom: 10px;
-  transform: translate(-50%, 0); /* Сдвигаем элемент на 50% ширины влево */
+  transform: translate(-50%, 0);
   left: 50%;
   z-index: 10;
 }
 
 .audio-container {
   width: 100%;
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  background: rgba(29, 33, 35, 0.30);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(29, 33, 35, 0.3);
   backdrop-filter: blur(15px);
   padding: 20px;
   box-sizing: border-box;
   position: fixed;
   bottom: 0px;
-  transform: translate(-50%, 0); /* Сдвигаем элемент на 50% ширины влево */
+  transform: translate(-50%, 0);
   left: 50%;
   z-index: 10;
   text-align: center;
 }
 
-/* Стили для аудио */
 audio {
   width: 100%;
 }
 
-/* Стили для названия песни */
 .song-title {
-  color: #fff; /* Цвет текста */
+  color: #fff;
   font-weight: bold;
   font-size: 18px;
 }
 
-/* Изменение цвета кнопок на белый */
-/* Применяется к кнопкам управления аудио */
+.loading {
+  position: absolute;
+  z-index: 999;
+  font-size: 20px;
+  color: #fff;
+  font-weight: 900;
+  bottom: 100px;
+  transform: translate(-50%, 0);
+  left: 50%;
+}
 
+.list_end {
+  font-size: 20px;
+  color: #fff;
+  font-weight: 900;
+  display: block;
+  margin: 0 auto;
+}
 
 audio::-webkit-media-controls-play-button,
 audio::-webkit-media-controls-pause-button,
