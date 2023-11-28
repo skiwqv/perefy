@@ -201,7 +201,7 @@ audio {
 }
 
 .loading-wrapper {
-  position: absolute;
+  position: fixed;
   z-index: 20;
   top: 0;
   bottom: 0;
