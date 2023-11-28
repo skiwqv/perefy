@@ -1,6 +1,9 @@
 
 <template>
   <div class="song_wrapper">
+    <div v-if="isLoading" class="loading-wrapper">
+      <unicon class="loading" fill="white" width="60px" height="60px" name="spinner-alt"></unicon>
+    </div>
     <div class="audio-container">
       <audio controls :src="playSong"></audio>
       <p class="song-title">{{ songTitle }}</p>
@@ -12,7 +15,6 @@
       </div>
       <p v-if="reachedEnd" class="list_end">that's all available songs</p>
     </div>
-    <p class="loading" v-if="isLoading">loading...</p>
   </div>
 </template>
 
@@ -55,9 +57,14 @@ function handleScroll() {
 }
 
 async function fetchMusic() {
-  const response = await axios.request(options);
-  musicName.value = response.data.all;
-  songMap.value = response.data.map;
+  isLoading.value = true
+  await axios.request(options).then(response => {
+    musicName.value = response.data.all;
+    songMap.value = response.data.map;
+  }).catch(err => {
+    console.log('err', err);
+    isLoading.value = false
+  })
 
   musicName.value.forEach((item) => {
     filteredSongs.value.push({
@@ -183,13 +190,34 @@ audio {
   font-size: 18px;
 }
 
+@keyframes spin {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-wrapper {
+  position: absolute;
+  z-index: 20;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background-color: #0000005e;
+  width: 100%;
+}
+
 .loading {
   position: absolute;
   z-index: 999;
   font-size: 20px;
   color: #fff;
+  animation: spin 3s linear infinite;
   font-weight: 900;
-  bottom: 100px;
+  bottom: 50%;
   transform: translate(-50%, 0);
   left: 50%;
 }
