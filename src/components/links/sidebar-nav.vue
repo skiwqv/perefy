@@ -1,21 +1,25 @@
 <template>
-  <div>
-    <aside class="sidebar">
-        <router-link to="/" active-class="link__active" class="sidebar__link">
-            <unicon width="22px" :fill="isActive('/') ? '#fff' : '#FFFFFF40'" height="22px" hover-fill="#fff" name="home"></unicon>
-        </router-link>
-        <router-link to="/about" active-class="link__active" class="sidebar__link">
-        <unicon width="22px" height="22px" :fill="isActive('/about') ? '#fff' : '#FFFFFF40'" hover-fill="#fff"  name="music"></unicon>
-        </router-link>
-        <router-link to="/favorite" active-class="link__active" class="sidebar__link">
-            <unicon width="22px" height="22px" :fill="isActive('/favorite') ? '#fff' : '#FFFFFF40'" hover-fill="#fff"   name="folder-heart"></unicon>
-        </router-link>
-        <router-link to="/settings" active-class="link__active" class="sidebar__link">
-            <unicon width="22px" height="22px" :fill="isActive('/settings') ? '#fff' : '#FFFFFF40'" hover-fill="#fff"   name="setting"></unicon>
-        </router-link>
+    <div>
+        <aside class="sidebar">
+            <router-link to="/home" active-class="link__active" class="sidebar__link">
+                <unicon width="22px" :fill="isActive('/home') ? '#fff' : '#FFFFFF40'" height="22px" hover-fill="#fff"
+                    name="home"></unicon>
+            </router-link>
+            <router-link to="/about" active-class="link__active" class="sidebar__link">
+                <unicon width="22px" height="22px" :fill="isActive('/about') ? '#fff' : '#FFFFFF40'" hover-fill="#fff"
+                    name="music"></unicon>
+            </router-link>
+            <router-link to="/favorite" active-class="link__active" class="sidebar__link">
+                <unicon width="22px" height="22px" :fill="isActive('/favorite') ? '#fff' : '#FFFFFF40'" hover-fill="#fff"
+                    name="folder-heart"></unicon>
+            </router-link>
+            <router-link to="/settings" active-class="link__active" class="sidebar__link">
+                <unicon width="22px" height="22px" :fill="isActive('/settings') ? '#fff' : '#FFFFFF40'" hover-fill="#fff"
+                    name="setting"></unicon>
+            </router-link>
 
-    </aside>
-  </div>
+        </aside>
+    </div>
 </template>
 
 <script setup>
@@ -23,7 +27,7 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-function isActive(page){
+function isActive(page) {
     return route.path === page
 }
 
@@ -31,7 +35,7 @@ function isActive(page){
 </script>
 
 <style scoped>
-.sidebar{
+.sidebar {
     border-radius: 100px;
     background: #0F0E0E;
     display: inline-flex;
@@ -45,8 +49,8 @@ function isActive(page){
     z-index: 10;
     margin-left: 22px;
 }
-.link__active{
+
+.link__active {
     fill: white;
 }
-
 </style>

@@ -1,13 +1,11 @@
 <template>
-  <div>SETTINGS</div>
+  <div class="text-wrapper">
+    <div class="text">settings</div>
+  </div>
 </template>
 
-<script>
-export default {
+<script setup>
 
-}
 </script>
 
-<style>
-
-</style>
+<style></style>
